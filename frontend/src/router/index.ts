@@ -22,7 +22,7 @@ const routes: Array<RouteConfig> = [
     path: "/view-map",
     name: "Map Viewer",
     component: MapViewer,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/:pathMatch(.*)*",

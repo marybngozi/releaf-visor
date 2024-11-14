@@ -1,6 +1,6 @@
 <template>
   <div class="holder w-full">
-    <PageHeader class="header" />
+    <PageHeader />
 
     <main class="w-full text-white font-mulish pl-8 pr-4">
       <h1
@@ -50,7 +50,5 @@ main {
 
 main h1 {
   @apply text-4xl font-bold font-mulish mt-20 max-w-2xl md:text-5xl md:mt-32 lg:text-7xl lg:max-w-3xl lg:mt-40;
-  /* max-width: 650px; */
-  /* line-height: 44px; */
 }
 </style>

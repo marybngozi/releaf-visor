@@ -1,25 +1,24 @@
 <script lang="ts">
 export default {
   name: "PageHeader",
-  props: {
-    msg: String,
-  },
 };
 </script>
 
 <template>
   <header
-    class="bg-white px-4 py-3 font-mulish flex justify-between items-center lg:pr-10"
+    class="bg-white px-4 py-3 font-mulish flex justify-between items-center lg:pr-10 shadow-md"
   >
     <div class="flex gap-1 items-center">
-      <img
-        alt="Visor logo"
-        src="@/assets/images/logo.png"
-        class="h-9 md:h-11 lg:h-12"
-      />
-      <h1 class="text-primary font-bold text-xl lg:text-2xl mt-1 lg:mt-2">
-        Releaf Visor
-      </h1>
+      <router-link :to="{ name: 'Home' }" class="flex gap-1 items-center">
+        <img
+          alt="Visor logo"
+          src="@/assets/images/logo.png"
+          class="h-9 md:h-11 lg:h-12"
+        />
+        <h1 class="text-primary font-bold text-xl lg:text-2xl mt-1 lg:mt-2">
+          Releaf Visor
+        </h1>
+      </router-link>
     </div>
 
     <nav class="">

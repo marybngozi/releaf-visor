@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import PageNotFound from "../views/PageNotFound.vue";
 import MapViewer from "../views/MapViewer.vue";
+import store from "@/store";
 
 Vue.use(VueRouter);
 
@@ -22,7 +23,7 @@ const routes: Array<RouteConfig> = [
     path: "/view-map",
     name: "Map Viewer",
     component: MapViewer,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: false }, //disable the authentication
   },
   {
     path: "/:pathMatch(.*)*",
@@ -40,7 +41,7 @@ const router = new VueRouter({
 router.beforeEach((to: Route, from: Route, next: NavigationGuardNext) => {
   const title = to.name as string;
   if (title) {
-    document.title = `Releaf Visor | ${title}`;
+    document.title = `Releaf Insight | ${title}`;
   }
 
   if (to.meta?.guest || !to.meta?.requiresAuth) {
@@ -48,8 +49,7 @@ router.beforeEach((to: Route, from: Route, next: NavigationGuardNext) => {
     return;
   }
 
-  const tokenName = process.env.VUE_APP_TOKEN_NAME;
-  if (!localStorage.getItem(tokenName)) {
+  if (!store.state.loggedIn) {
     next({
       path: "/login",
       query: { nextUrl: to.fullPath },

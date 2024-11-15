@@ -12,7 +12,7 @@
     <router-link
       :to="{ name: 'dashboard' }"
       class="text-purple-700 underline mt-4"
-      >Back to sane</router-link
+      >Back to sanity</router-link
     >
   </div>
 </template>

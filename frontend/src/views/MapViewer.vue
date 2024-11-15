@@ -2,18 +2,26 @@
   <div>
     <PageHeader />
 
-    <main>
+    <div class="loader w-full flex items-center justify-center" v-if="loading">
+      <div>
+        <spinner color="primary" class="h-20 w-20 opacity-40"></spinner>
+        <p><em>...fetching map</em></p>
+      </div>
+    </div>
+
+    <main v-else>
       <GmapMap
         :center="{ lat: 5.587366, lng: 8.133794 }"
-        :zoom="9"
+        :zoom="12"
         style="width: 100%; height: 89vh"
-        map-type-id="terrain"
       >
+        <!-- map-type-id="terrain" -->
         <GmapMarker
           v-for="mill in markers"
           :key="mill.millName"
           :position="{ lat: mill.latitude, lng: mill.longitude }"
           :title="mill.millName"
+          :icon="getMarkerIcon(mill)"
           @click="selectedMill = mill"
         />
         <GmapInfoWindow
@@ -100,8 +108,10 @@
         v-if="showAddForm"
         class=""
         @close="showAddForm = false"
-        @added="updateMarkers"
+        @added="addMarkers"
+        @edited="updateMarkers"
         :isEdit="isEdit"
+        :editData="selectedMill"
       />
     </main>
   </div>
@@ -110,6 +120,10 @@
 <style scoped>
 main {
   @apply p-2 relative;
+}
+
+.loader {
+  height: 80vh;
 }
 
 p {
@@ -125,6 +139,7 @@ p span {
 /* eslint-disable */
 import PageHeader from "@/components/PageHeader.vue";
 import AddNewMarker from "@/components/AddNewMarker.vue";
+import { gmapApi } from "vue2-google-maps";
 
 export default {
   name: "MapViewer",
@@ -134,35 +149,35 @@ export default {
     AddNewMarker,
   },
 
+  computed: {
+    google: gmapApi,
+  },
+
   data() {
     return {
+      loading: true,
       showAddForm: false,
       isEdit: false,
-      markers: [
-        {
-          millName: "RTM001",
-          latitude: 5.546921,
-          longitude: 8.198576,
-          p1Amount: 314.56,
-          numTransactions: 11,
-          p1PriceTon: 53400,
-          lastTransactionDate: null,
-        },
-        {
-          millName: "RTM008",
-          latitude: 5.609851,
-          longitude: 8.183427,
-          p1Amount: 625.89,
-          numTransactions: 19,
-          p1PriceTon: 51100,
-          lastTransactionDate: "2023-10-14",
-        },
-      ],
+      markers: [],
       selectedMill: null,
     };
   },
 
+  async created() {
+    await this.getData();
+  },
+
   methods: {
+    getMarkerIcon(mill) {
+      if (!mill.lastTransactionDate) {
+        return "https://biopay.s3.eu-west-2.amazonaws.com/email-templates/pin.png";
+      } else {
+        return `https://biopay.s3.eu-west-2.amazonaws.com/email-templates/pin-${this.getLastTransactionColor(
+          mill.lastTransactionDate
+        )}.png`;
+      }
+    },
+
     formatMoney(val) {
       return val.toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -179,14 +194,22 @@ export default {
       if (transactionDate > oneWeekAgo) {
         return "green";
       } else if (transactionDate > twoWeeksAgo) {
-        return "orange";
+        return "yellow";
       } else {
         return "red";
       }
     },
 
-    updateMarkers(newMarker) {
+    addMarkers(newMarker) {
       this.markers.push(newMarker);
+      this.showAddForm = false;
+    },
+
+    updateMarkers(newMarker) {
+      const mIndex = this.markers.findIndex((m) => m.id === newMarker.id);
+
+      this.markers[mIndex] = newMarker;
+
       this.showAddForm = false;
     },
 
@@ -194,6 +217,23 @@ export default {
       console.log(data);
       this.isEdit = true;
       this.showAddForm = true;
+    },
+
+    async getData() {
+      try {
+        this.loading = true;
+
+        const res = await this.$http.get("/mill?pageSize=100");
+
+        this.markers = res.data;
+
+        this.loading = false;
+
+        console.log(res);
+      } catch (error) {
+        this.loading = false;
+        console.log(error);
+      }
     },
   },
 };

@@ -10,10 +10,10 @@
 
       <form
         class="mt-3 overflow-y-scroll h-[60vh]"
-        @submit.prevent="addNewLocation"
+        @submit.prevent="addEditLocation"
       >
         <h1 class="text-2xl font-bold text-primary text-center">
-          Add a Palm Kernel Dumpsite
+          <span>{{ isEdit ? "Edit" : "Add" }}</span> Palm Kernel Dumpsite
         </h1>
 
         <div class="mt-9 mb-5">
@@ -97,7 +97,7 @@
         </div>
 
         <button
-          @click="addNewLocation"
+          @click="addEditLocation"
           type="submit"
           :disabled="!formReady"
           class="w-full bg-primary text-white py-3 rounded mt-14"
@@ -121,11 +121,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    editData: {
+      type: Object,
+      default: () => ({
+        millName: "RTM003",
+        latitude: 5.0,
+        longitude: 8.0,
+        p1Amount: 0.0,
+        numTransactions: 0,
+        p1PriceTon: 0,
+        lastTransactionDate: "2023-10-22",
+        id: "6736a8dcdbc0d30c42d5d1e@",
+      }),
+    },
+  },
+
+  created() {
+    if (this.isEdit) {
+      this.form = { ...this.editData };
+    }
   },
 
   data() {
     return {
       existingPlace: null,
+      loading: false,
       form: {
         millName: "",
         p1Amount: "",
@@ -187,19 +207,33 @@ export default {
       return true;
     },
 
-    addNewLocation() {
+    async addEditLocation() {
       try {
         if (!this.formReady) {
           return;
         }
 
-        // TODO: call backend
+        this.loading = true;
 
-        this.$emit("added", {
-          ...this.form,
-          latitude: Number(this.form.latitude),
-          longitude: Number(this.form.longitude),
-        });
+        const res = await this.$http.post("/mill", this.form);
+
+        console.log(res);
+
+        this.loading = false;
+
+        if (this.isEdit) {
+          this.$emit("edited", {
+            ...this.form,
+            latitude: Number(this.form.latitude),
+            longitude: Number(this.form.longitude),
+          });
+        } else {
+          this.$emit("added", {
+            ...this.form,
+            latitude: Number(this.form.latitude),
+            longitude: Number(this.form.longitude),
+          });
+        }
 
         this.clearForm();
       } catch (error) {

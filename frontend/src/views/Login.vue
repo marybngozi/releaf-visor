@@ -8,7 +8,10 @@
       </section>
 
       <section id="right">
-        <form @submit.prevent="login" class="px-4 w-full md:px-20 lg:w-2/3">
+        <form
+          @submit.prevent="login"
+          class="px-4 w-full md:px-20 lg:w-11/12 xl:w-10/12"
+        >
           <h1 class="text-lg font-bold text-primary text-center">Login</h1>
 
           <div class="form-group">
@@ -28,11 +31,13 @@
 
           <div class="form-group">
             <button
+              :disabled="loading || !formReady"
               @click="login"
               type="submit"
-              class="bg-primary w-full text-white px-4 py-2.5 rounded mt-7"
+              class="flex items-center justify-center bg-primary w-full text-white px-4 py-2.5 rounded mt-7"
             >
-              Login
+              <span> Login </span>
+              <spinner v-if="loading" class="ml-3"></spinner>
             </button>
           </div>
         </form>
@@ -41,7 +46,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 /* eslint-disable */
 import PageHeader from "@/components/PageHeader.vue";
 
@@ -55,9 +60,10 @@ export default {
   data() {
     return {
       form: {
-        email: "",
-        password: "",
+        email: "umaryblessing@gmail.com",
+        password: "pass2.$$Word",
       },
+      loading: false,
     };
   },
 
@@ -74,9 +80,21 @@ export default {
           return;
         }
 
-        // TODO: call backend
-        console.log(this.form);
+        this.loading = true;
+
+        const res = await this.$http.post("/user/login", this.form);
+
+        console.log(res);
+
+        // update store and the loggedIn state
+        this.$store.commit("setUser", res.data.email);
+        this.$store.commit("setLoggedIn", true);
+
+        this.loading = false;
+
+        this.$router.push({ name: "Map Viewer" });
       } catch (error) {
+        this.loading = false;
         console.log(error);
       }
     },

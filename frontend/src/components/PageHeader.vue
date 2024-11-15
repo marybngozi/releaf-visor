@@ -1,6 +1,16 @@
-<script lang="ts">
+<script>
+/* eslint-disable */
 export default {
   name: "PageHeader",
+
+  methods: {
+    logout() {
+      this.$router.push({ name: "Login" });
+      setTimeout(() => {
+        this.$store.commit("logout");
+      }, 200);
+    },
+  },
 };
 </script>
 
@@ -16,7 +26,7 @@ export default {
           class="h-9 md:h-11 lg:h-12"
         />
         <h1 class="text-primary font-bold text-xl lg:text-2xl mt-1 lg:mt-2">
-          Releaf Visor
+          Releaf Outlook
         </h1>
       </router-link>
     </div>
@@ -29,11 +39,15 @@ export default {
           </router-link>
         </li>
 
-        <li class="text-secondary">|</li>
+        <!-- <li class="text-secondary">|</li>
 
-        <li>
-          <router-link :to="{ name: 'Login' }" class=""> Login </router-link>
+        <li v-if="$store.state.loggedIn">
+          <a @click.prevent="logout" class="text-secondary">Logout</a>
         </li>
+
+        <li v-else>
+          <router-link :to="{ name: 'Login' }"> Login </router-link>
+        </li> -->
       </ul>
     </nav>
   </header>

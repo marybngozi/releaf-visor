@@ -32,63 +32,12 @@
           }"
           @closeclick="selectedMill = null"
         >
-          <div class="selectedMill" v-if="selectedMill">
-            <h4 class="text-xl font-mulish font-bold flex items-center gap-2">
-              <span
-                class="block h-2 w-2 rounded-full"
-                :style="{
-                  backgroundColor: getLastTransactionColor(
-                    selectedMill.lastTransactionDate
-                  ),
-                }"
-              ></span>
-
-              <span class="text-primary">{{ selectedMill.millName }}</span>
-            </h4>
-
-            <p class="mt-2">
-              <b>Palm Kernel sold:</b>
-              <span> {{ selectedMill.p1Amount.toFixed(2) }} tons </span>
-            </p>
-
-            <p>
-              <b>Number of Transactions:</b>
-              <span>
-                {{ selectedMill.numTransactions }}
-              </span>
-            </p>
-
-            <p>
-              <b>Average price:</b>
-              <span> ₦{{ formatMoney(selectedMill.p1PriceTon) }}/ton </span>
-            </p>
-
-            <p>
-              <b>Last Transaction on:</b>
-              <span>
-                {{ selectedMill.lastTransactionDate || "N/A" }}
-              </span>
-            </p>
-
-            <p>
-              <b>Status:</b>
-              <em
-                :class="`font-semibold ${
-                  selectedMill.status && selectedMill.status === 'active'
-                    ? 'text-secondary'
-                    : 'text-red-400'
-                }`"
-              >
-                {{ selectedMill?.status || "Inactive" }}
-              </em>
-            </p>
-
-            <p class="text-right">
-              <button class="text-primary underline" @click="openForm(true)">
-                Edit Data
-              </button>
-            </p>
-          </div>
+          <MapPopup
+            v-if="selectedMill"
+            @openEditForm="openForm"
+            :getLastTransactionColor="getLastTransactionColor"
+            :selectedMill="selectedMill"
+          />
         </GmapInfoWindow>
       </GmapMap>
 
@@ -135,6 +84,7 @@ p span {
 <script>
 /* eslint-disable */
 import PageHeader from "@/components/PageHeader.vue";
+import MapPopup from "@/components/MapPopup.vue";
 import AddNewMarker from "@/components/AddNewMarker.vue";
 
 export default {
@@ -142,6 +92,7 @@ export default {
 
   components: {
     PageHeader,
+    MapPopup,
     AddNewMarker,
   },
 
@@ -178,7 +129,7 @@ export default {
     },
 
     getLastTransactionColor(date) {
-      if (!date) return "gray";
+      if (!date) return "secondary";
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
       const transactionDate = new Date(date);
@@ -200,7 +151,6 @@ export default {
       }, 200);
     },
     async addMarkers(newMarker) {
-      // this.markers.push(newMarker);
       this.showAddForm = false;
 
       await this.getData();

@@ -15,25 +15,25 @@ export class MillService {
   ) {}
 
   async createOrEditMill(payload: MillDto) {
-    try {
-      const { id, ...millOthers } = payload;
+    const { id, millName, ...millOthers } = payload;
 
-      if (id) {
-        return this.millModel.findOneAndUpdate({ _id: id }, millOthers);
-      }
-
-      const mill = await this.millModel.findOne({ millName: payload.millName });
-
-      if (mill) {
-        throw new BadRequestException(
-          'Mill Name already exists, please use another name',
-        );
-      }
-
-      return this.millModel.create(payload);
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    if (id) {
+      return this.millModel.findOneAndUpdate({ _id: id }, millOthers);
     }
+
+    const mill = await this.millModel.findOne({
+      millName: millName.toLowerCase,
+    });
+
+    if (mill) {
+      throw new BadRequestException(
+        `Mill name ${millName} already exists, please use another name`,
+      );
+    }
+
+    payload.millName = millName.toLowerCase();
+
+    return this.millModel.create(payload);
   }
 
   async listMill(payload: QueryMillDto) {

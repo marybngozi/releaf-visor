@@ -12,18 +12,22 @@
         class="mt-3 overflow-y-scroll h-full pb-5 font-mulish"
         @submit.prevent="addEditLocation"
       >
-        <h1 class="text-2xl font-bold text-primary text-center">
-          <span>{{ isEdit ? "Edit" : "Add" }}</span> Palm Kernel Dumpsite
-        </h1>
+        <div class="sticky top-0 bg-white pb-2">
+          <h1 class="text-2xl font-bold text-primary text-center">
+            <span>{{ isEdit ? "Edit" : "Add" }}</span> Palm Kernel Dumpsite
+          </h1>
+        </div>
 
-        <div class="mt-9 mb-5">
+        <div class="mt-7 mb-5">
           <h2
             class="bg-green-50 px-4 py-2 rounded text-sm font-bold text-gray-500"
           >
             Use the search to get your desired location
           </h2>
 
-          <label class="mt-2 flex w-full border pl-4 gap-3 h-12 rounded">
+          <label
+            class="mt-2 flex w-full border border-secondary pl-4 gap-3 h-12 rounded"
+          >
             <GmapAutocomplete
               @place_changed="initMarker"
               class="w-full outline-none"
@@ -50,6 +54,7 @@
             required
             minlength="3"
             maxlength="20"
+            :readonly="isEdit"
           />
         </div>
 
@@ -60,7 +65,7 @@
           </label>
           <input
             type="number"
-            min="0"
+            min="1"
             max="999999999"
             id="p1Amount"
             v-model="form.p1Amount"
@@ -249,12 +254,11 @@ export default {
         if (!this.formReady) {
           return;
         }
+        this.errorMessage = null;
 
         this.loading = true;
 
         const res = await this.$http.post("/mill", this.form);
-
-        console.log(res);
 
         this.loading = false;
 
@@ -276,6 +280,14 @@ export default {
       } catch (error) {
         this.loading = false;
         console.log(error);
+        if (error.code == "ERR_BAD_REQUEST") {
+          // if it is an array, take the first index
+          if (Array.isArray(error.response.data.message)) {
+            this.errorMessage = error.response.data.message[0];
+            return;
+          }
+          this.errorMessage = error.response.data.message;
+        }
       }
     },
   },
@@ -296,5 +308,8 @@ form {
 }
 .req {
   @apply text-red-600;
+}
+input:read-only {
+  @apply bg-gray-100;
 }
 </style>

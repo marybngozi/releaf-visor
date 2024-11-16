@@ -38,9 +38,9 @@ export class MillDto {
   @Transform(({ value }) => Math.round(parseFloat(value) * 100) / 100)
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: 'Capacity must be a valid number.' },
+    { message: 'The Capacity must be a valid number.' },
   )
-  @IsPositive({ message: 'p1Amount must be a positive number.' })
+  @IsPositive({ message: 'The Capacity must be greater than 0.' })
   p1Amount: number;
 
   @IsOptional()

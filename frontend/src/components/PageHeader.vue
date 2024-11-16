@@ -26,7 +26,7 @@ export default {
           class="h-9 md:h-11 lg:h-12"
         />
         <h1 class="text-primary font-bold text-xl lg:text-2xl mt-1 lg:mt-2">
-          Releaf Outlook
+          Releaf Insight
         </h1>
       </router-link>
     </div>
@@ -59,5 +59,8 @@ li {
 }
 li a {
   @apply text-primary text-sm md:text-base lg:text-lg font-bold border-b-2 hover:border-secondary border-transparent px-2 py-1;
+}
+li a:active {
+  @apply border-b-2 border-secondary;
 }
 </style>

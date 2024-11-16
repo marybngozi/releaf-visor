@@ -21,7 +21,7 @@ export default {
     <div class="flex gap-1 items-center">
       <router-link :to="{ name: 'Home' }" class="flex gap-1 items-center">
         <img
-          alt="Visor logo"
+          alt="Releaf Insight logo"
           src="@/assets/images/logo.png"
           class="h-9 md:h-11 lg:h-12"
         />

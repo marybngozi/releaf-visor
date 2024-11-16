@@ -4,7 +4,7 @@
 
     <main>
       <section id="left">
-        <h1>See the World in a new light with Releaf Visor.</h1>
+        <h1>See the World in a new light with Releaf Insight.</h1>
       </section>
 
       <section id="right">

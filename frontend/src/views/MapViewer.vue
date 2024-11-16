@@ -84,10 +84,7 @@
             </p>
 
             <p class="text-right">
-              <button
-                class="text-primary underline"
-                @click="editData(selectedMill)"
-              >
+              <button class="text-primary underline" @click="openForm(true)">
                 Edit Data
               </button>
             </p>
@@ -98,7 +95,7 @@
       <div class="absolute bottom-4 left-4">
         <button
           class="bg-primary text-white px-4 py-2 rounded"
-          @click="showAddForm = true"
+          @click="openForm(false)"
         >
           Add New PKS Dumpsite
         </button>
@@ -139,7 +136,6 @@ p span {
 /* eslint-disable */
 import PageHeader from "@/components/PageHeader.vue";
 import AddNewMarker from "@/components/AddNewMarker.vue";
-import { gmapApi } from "vue2-google-maps";
 
 export default {
   name: "MapViewer",
@@ -147,10 +143,6 @@ export default {
   components: {
     PageHeader,
     AddNewMarker,
-  },
-
-  computed: {
-    google: gmapApi,
   },
 
   data() {
@@ -200,23 +192,31 @@ export default {
       }
     },
 
-    addMarkers(newMarker) {
-      this.markers.push(newMarker);
+    openForm(val) {
       this.showAddForm = false;
+      this.isEdit = val;
+      setTimeout(() => {
+        this.showAddForm = true;
+      }, 200);
+    },
+    async addMarkers(newMarker) {
+      // this.markers.push(newMarker);
+      this.showAddForm = false;
+
+      await this.getData();
     },
 
     updateMarkers(newMarker) {
-      const mIndex = this.markers.findIndex((m) => m.id === newMarker.id);
+      const existingMarker = this.markers.find(
+        (marker) => marker.id === newMarker.id
+      );
 
-      this.markers[mIndex] = newMarker;
+      if (existingMarker) {
+        // Update properties directly using pass-by-reference
+        Object.assign(existingMarker, newMarker);
+      }
 
       this.showAddForm = false;
-    },
-
-    editData(data) {
-      console.log(data);
-      this.isEdit = true;
-      this.showAddForm = true;
     },
 
     async getData() {

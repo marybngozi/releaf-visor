@@ -1,5 +1,5 @@
 <template>
-  <section class="absolute top-1 bottom-1 right-1 w-[90%] max-w-md">
+  <section>
     <div class="relative w-full h-full z-10 px-4 py-7 bg-white shadow-md">
       <button
         class="py-2 px-3 absolute top-0 left-0 h-10 w-10 text-2xl"
@@ -9,7 +9,7 @@
       </button>
 
       <form
-        class="mt-3 overflow-y-scroll h-[60vh]"
+        class="mt-3 overflow-y-scroll h-full pb-5 font-mulish"
         @submit.prevent="addEditLocation"
       >
         <h1 class="text-2xl font-bold text-primary text-center">
@@ -39,7 +39,10 @@
         </div>
 
         <div class="form-group">
-          <label for="millName">Name of the Mill</label>
+          <label for="millName">
+            <span class="req">*</span>
+            Name of the Mill
+          </label>
           <input
             type="text"
             id="millName"
@@ -51,7 +54,10 @@
         </div>
 
         <div class="form-group">
-          <label for="p1Amount">Palm Kernel Capacity (tons)</label>
+          <label for="p1Amount">
+            <span class="req">*</span>
+            Palm Kernel Capacity (tons)
+          </label>
           <input
             type="number"
             min="0"
@@ -63,7 +69,10 @@
         </div>
 
         <div class="form-group">
-          <label for="status">Location status</label>
+          <label for="status">
+            <span class="req">*</span>
+            Location status
+          </label>
           <select id="status" v-model="form.status">
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -71,7 +80,10 @@
         </div>
 
         <div class="form-group" v-if="form.latitude">
-          <label for="latitude">Latitude</label>
+          <label for="latitude">
+            <span class="req">*</span>
+            Latitude
+          </label>
           <input
             type="text"
             pattern="^-?\d+(\.\d+)?$"
@@ -84,7 +96,10 @@
         </div>
 
         <div class="form-group" v-if="form.longitude">
-          <label for="longitude">longitude</label>
+          <label for="longitude">
+            <span class="req">*</span>
+            Longitude
+          </label>
           <input
             type="text"
             pattern="^-?\d+(\.\d+)?$"
@@ -96,16 +111,37 @@
           />
         </div>
 
-        <button
-          @click="addEditLocation"
-          type="submit"
-          :disabled="!formReady"
-          class="w-full bg-primary text-white py-3 rounded mt-14"
-        >
-          <span v-if="isEdit">Update Site Info</span>
+        <div class="form-group">
+          <label for="lastTransactionDate"> Last Transaction Date </label>
+          <input
+            type="date"
+            id="lastTransactionDate"
+            v-model="form.lastTransactionDate"
+            :max="new Date().toISOString().split('T')[0]"
+          />
+        </div>
 
-          <span v-else>Add New Site</span>
-        </button>
+        <div class="mt-3 text-red-400 text-sm font-semibold">
+          {{ errorMessage }}
+        </div>
+
+        <div class="mt-8">
+          <p class="text-sm text-secondary mb-2">
+            <span class="req">*</span> Required
+          </p>
+
+          <button
+            @click="addEditLocation"
+            type="submit"
+            :disabled="!formReady || loading"
+            class="w-full bg-primary text-white py-3 rounded flex gap-2 justify-center items-center"
+          >
+            <span v-if="isEdit">Update Site Info</span>
+
+            <span v-else>Add New Site</span>
+            <spinner v-if="loading"></spinner>
+          </button>
+        </div>
       </form>
     </div>
   </section>
@@ -146,6 +182,7 @@ export default {
     return {
       existingPlace: null,
       loading: false,
+      errorMessage: null,
       form: {
         millName: "",
         p1Amount: "",
@@ -237,9 +274,27 @@ export default {
 
         this.clearForm();
       } catch (error) {
+        this.loading = false;
         console.log(error);
       }
     },
   },
 };
 </script>
+
+<style scoped>
+section {
+  @apply absolute top-1 bottom-1 right-1;
+  width: 90%;
+  max-width: 448px;
+  z-index: 100;
+}
+
+form {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.req {
+  @apply text-red-600;
+}
+</style>

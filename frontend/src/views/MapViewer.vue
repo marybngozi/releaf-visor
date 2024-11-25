@@ -14,6 +14,7 @@
         :center="{ lat: 5.587366, lng: 8.133794 }"
         :zoom="12"
         style="width: 100%; height: 89vh"
+        @click="addMark"
       >
         <!-- map-type-id="terrain" -->
         <GmapMarker
@@ -58,6 +59,8 @@
         @edited="updateMarkers"
         :isEdit="isEdit"
         :editData="selectedMill"
+        :latitude="latitude"
+        :longitude="longitude"
       />
     </main>
   </div>
@@ -103,6 +106,8 @@ export default {
       isEdit: false,
       markers: [],
       selectedMill: null,
+      latitude: null,
+      longitude: null,
     };
   },
 
@@ -111,6 +116,18 @@ export default {
   },
 
   methods: {
+    addMark(e) {
+      if (!e) return;
+      // this.isEdit = false;
+      this.latitude = e.latLng.lat();
+      this.longitude = e.latLng.lng();
+
+      this.showAddForm = false;
+      this.isEdit = false;
+      setTimeout(() => {
+        this.showAddForm = true;
+      }, 200);
+    },
     getMarkerIcon(mill) {
       if (!mill.lastTransactionDate) {
         return "https://biopay.s3.eu-west-2.amazonaws.com/email-templates/pin.png";

@@ -175,11 +175,16 @@ export default {
         id: "6736a8dcdbc0d30c42d5d1e@",
       }),
     },
+    latitude: Number,
+    longitude: Number,
   },
 
   created() {
     if (this.isEdit) {
       this.form = { ...this.editData };
+    } else {
+      this.form.latitude = this.latitude.toFixed(6);
+      this.form.longitude = this.longitude.toFixed(6);
     }
   },
 
